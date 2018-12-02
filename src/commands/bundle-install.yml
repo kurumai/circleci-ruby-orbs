@@ -44,26 +44,34 @@ parameters:
     description: "gemspec name (required if with_gemfile_lock is false)"
 
 steps:
-  - when:
-      condition: << parameters.with_gemfile_lock >>
-      steps:
-        - restore_cache:
-            keys:
-              - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>.lock" }}-{{ .Branch }}
-              - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>.lock" }}
-              - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}
-              - << parameters.cache_key_prefix >>
+  - restore_cache:
+      keys:
+        - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>.lock" }}-{{ .Branch }}
+        - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>.lock" }}
+        - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}
+        - << parameters.cache_key_prefix >>
 
-  - unless:
-      condition: << parameters.with_gemfile_lock >>
-      steps:
-        - restore_cache:
-            keys:
-              - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>" }}-{{ checksum "<< parameters.gemspec_name >>.gemspec" }}-{{ .Branch }}
-              - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>" }}-{{ checksum "<< parameters.gemspec_name >>.gemspec" }}
-              - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>" }}
-              - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}
-              - << parameters.cache_key_prefix >>
+# TODO: debug
+#  - when:
+#      condition: << parameters.with_gemfile_lock >>
+#      steps:
+#        - restore_cache:
+#            keys:
+#              - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>.lock" }}-{{ .Branch }}
+#              - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>.lock" }}
+#              - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}
+#              - << parameters.cache_key_prefix >>
+#
+#  - unless:
+#      condition: << parameters.with_gemfile_lock >>
+#      steps:
+#        - restore_cache:
+#            keys:
+#              - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>" }}-{{ checksum "<< parameters.gemspec_name >>.gemspec" }}-{{ .Branch }}
+#              - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>" }}-{{ checksum "<< parameters.gemspec_name >>.gemspec" }}
+#              - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>" }}
+#              - << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}
+#              - << parameters.cache_key_prefix >>
 
   - run:
       name: bundle install
@@ -116,19 +124,25 @@ steps:
                 restore-bundled-with
               fi
 
-  - when:
-      condition: << parameters.with_gemfile_lock >>
-      steps:
-        - save_cache:
-            key: << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>.lock" }}-{{ .Branch }}
-            paths:
-              - << parameters.bundle_path >>
+  - save_cache:
+      key: << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>.lock" }}-{{ .Branch }}
+      paths:
+        - << parameters.bundle_path >>
 
-  - unless:
-      condition: << parameters.with_gemfile_lock >>
-      steps:
-        - save_cache:
-            key: << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>" }}-{{ checksum "<< parameters.gemspec_name >>.gemspec" }}-{{ .Branch }}
-            paths:
-              - << parameters.bundle_path >>
-              - Gemfile.lock
+# TODO: debug
+#  - when:
+#      condition: << parameters.with_gemfile_lock >>
+#      steps:
+#        - save_cache:
+#            key: << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>.lock" }}-{{ .Branch }}
+#            paths:
+#              - << parameters.bundle_path >>
+#
+#  - unless:
+#      condition: << parameters.with_gemfile_lock >>
+#      steps:
+#        - save_cache:
+#            key: << parameters.cache_key_prefix >>-{{ .Environment.CIRCLE_JOB }}-{{ checksum "<< parameters.bundle_gemfile >>" }}-{{ checksum "<< parameters.gemspec_name >>.gemspec" }}-{{ .Branch }}
+#            paths:
+#              - << parameters.bundle_path >>
+#              - Gemfile.lock
